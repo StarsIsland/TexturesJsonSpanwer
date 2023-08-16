@@ -3,7 +3,7 @@ import json
 
 namespace = "starsnature"
 
-simplePath = "textures/item"
+simplePath = "textures/block"
 
 
 def generate_json(directory):
@@ -73,8 +73,40 @@ def save_json_to_file(directory):
         json.dump(special_json, file, indent=2)
 
 
+def check():
+    with open('terrain_texture.json', 'r') as file:
+        data1 = json.load(file)
+        keys1 = set(data1['texture_data'].keys())
+
+    # 读取第二个JSON文件
+    with open('item_texture.json', 'r') as file:
+        data2 = json.load(file)
+        keys2 = set(data2['texture_data'].keys())
+
+    # 找出两个JSON文件中重复的键
+    duplicated_keys = keys1.intersection(keys2)
+
+    with open('duplicated_keys.txt', 'w') as file:
+        for key in duplicated_keys:
+            file.write(key + '\n')
+
+    # 打印重复的键
+    print('Duplicated keys:', duplicated_keys)
+
+    for key in duplicated_keys:
+        new_key = key + '_item'
+        data2['texture_data'][new_key] = data2['texture_data'].pop(key)
+
+
+    # 将更新后的第二个JSON文件保存回磁盘
+    with open('modify_item.json', 'w') as file:
+        json.dump(data2, file, indent=4)
+
+
 # 指定要读取文件名的目录
-directory_path = "item"
+directory_path = "block"
 
 # 调用函数并打印生成的JSON
 save_json_to_file(directory_path)
+
+check()
